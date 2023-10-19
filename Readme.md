@@ -9,7 +9,7 @@ Make sure that git is installed on your computer. If not download it at https://
 
 Clone the project (or fork it) in a **terminal** :
 ```
-git clone --recursive https://gitlab.com/lisa-vr-course/info-h502_202223.git 
+git clone --recursive https://gitlab.com/lisa-vr-course/info-h502_202324.git 
 ```
 If you forgot to add `--recusive` flag (or want to update the submodules) use this:
 ```
@@ -45,7 +45,7 @@ sudo apt-get install libxi-dev
 
 ## Setup your development environment and build your code
 
-You have plenty of uption to setup your development environment and build your code.
+You have plenty of option to setup your development environment and build your code.
 For conveniance, we recommend you an IDE that directly support cmake. 
 Here is some of them:
 ### Setup an IDE that support CMake build (recommanded option)
