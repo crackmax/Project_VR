@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 	//The PATH_TO_LAB1_SHADERS is a macro that was defined in the cmake to have the path to the shaders more easely
 	char fileVert[128] = PATH_TO_LAB1_SHADERS"/LAB01_ex19.vert";
 	//char fileFrag[128] = PATH_TO_LAB1_SHADERS"/LAB01_ex19.frag";
-	char fileFrag[128] = PATH_TO_LAB1_SHADERS"/Solutions/Sol19.frag";
+	char fileFrag[128] = PATH_TO_LAB1_SHADERS"/LAB01_ex19.frag";
 	Shader shader(fileVert, fileFrag);
 
 	
