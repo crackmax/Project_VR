@@ -11,7 +11,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 #define some variable
 set(COMPILE_LAB01 ON CACHE BOOL "Compile the first Lab")
-set(COMPILE_LAB02 OFF CACHE BOOL "Compile the second Lab")
+set(COMPILE_LAB02 ON CACHE BOOL "Compile the second Lab")
 set(COMPILE_LAB03 OFF CACHE BOOL "Compile the third Lab")
 set(COMPILE_SOLUTIONS OFF CACHE BOOL "Compile the solutions")
 
