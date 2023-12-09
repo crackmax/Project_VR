@@ -26,7 +26,7 @@ GLuint compileShader(std::string shaderCode, GLenum shaderType);
 GLuint compileProgram(GLuint vertexShader, GLuint fragmentShader);
 void processInput(GLFWwindow* window);
 
-void loadCubemapFace(const char * file, const GLenum& targetCube);
+void loadCubemapFace(const char* file, const GLenum& targetCube);
 
 
 #ifndef NDEBUG
@@ -113,7 +113,6 @@ int main(int argc, char* argv[])
 	}
 
 	glfwMakeContextCurrent(window);
-
 	//load openGL function
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -153,7 +152,7 @@ int main(int argc, char* argv[])
 		"gl_Position = P*V*frag_coord; \n"
 		"v_normal = vec3(itM * vec4(normal, 1.0)); \n"
 		"v_frag_coord = frag_coord.xyz; \n"
-		"\n" 
+		"\n"
 		"}\n";
 
 	const std::string sourceF = "#version 330 core\n"
@@ -167,7 +166,7 @@ int main(int argc, char* argv[])
 
 		//In GLSL you can use structures to better organize your code
 		//light
-		"struct Light{\n" 
+		"struct Light{\n"
 		"vec3 light_pos; \n"
 		"float ambient_strength; \n"
 		"float diffuse_strength; \n"
@@ -184,10 +183,10 @@ int main(int argc, char* argv[])
 
 
 		"float specularCalculation(vec3 N, vec3 L, vec3 V ){ \n"
-			"vec3 R = reflect (-L,N);  \n " //reflect (-L,N) is  equivalent to //max (2 * dot(N,L) * N - L , 0.0) ;
-			"float cosTheta = dot(R , V); \n"
-			"float spec = pow(max(cosTheta,0.0), 32.0); \n"
-			"return light.specular_strength * spec;\n"
+		"vec3 R = reflect (-L,N);  \n " //reflect (-L,N) is  equivalent to //max (2 * dot(N,L) * N - L , 0.0) ;
+		"float cosTheta = dot(R , V); \n"
+		"float spec = pow(max(cosTheta,0.0), 32.0); \n"
+		"return light.specular_strength * spec;\n"
 		"}\n"
 
 		"void main() { \n"
@@ -208,51 +207,49 @@ int main(int argc, char* argv[])
 		"in vec3 position; \n"
 		"in vec2 tex_coords; \n"
 		"in vec3 normal; \n"
-		
+
 		//only P and V are necessary
-		
+		"uniform mat4 V; \n"
+		"uniform mat4 P; \n"
 
 		"out vec3 texCoord_v; \n"
 
 		" void main(){ \n"
-		//What are we going to use to determine what texture to put on the cube map
-		"texCoord_v = ... ;\n"
+		"texCoord_v = position;\n"
 		//remove translation info from view matrix to only keep rotation
-		"mat4 V_no_rot = ... ;\n"
-		//Compute the position of the cube map
-		"vec4 pos = ...; \n"
+		"mat4 V_no_rot = mat4(mat3(V)) ;\n"
+		"vec4 pos = P * V_no_rot * vec4(position, 1.0); \n"
 		// the positions xyz are divided by w after the vertex shader
 		// the z component is equal to the depth value
 		// we want a z always equal to 1.0 here, so we set z = w!
 		// Remember: z=1.0 is the MAXIMUM depth value ;)
-		"gl_Position = ...;\n"
-		"\n" 
+		"gl_Position = pos.xyww;\n"
+		"\n"
 		"}\n";
 
-	const std::string sourceFCubeMap = 
+	const std::string sourceFCubeMap =
 		"#version 330 core\n"
 		"out vec4 FragColor;\n"
 		"precision mediump float; \n"
-		//Get the cube map
 		"uniform samplerCube cubemapSampler; \n"
 		"in vec3 texCoord_v; \n"
 		"void main() { \n"
-		//Use the coordinate and the cube map
-		"FragColor = texture(...,...); \n"
+		"FragColor = texture(cubemapSampler,texCoord_v); \n"
 		"} \n";
 
 
-	//Compile the shader for the cube map
-	
+	Shader cubeMapShader = Shader(sourceVCubeMap, sourceFCubeMap);
 
 	char path[] = PATH_TO_OBJECTS "/sphere_smooth.obj";
 
 	Object sphere1(path);
 	sphere1.makeObject(shader, false);
-	
-	//Load the cube model and make the model
-	
-	
+
+	char pathCube[] = PATH_TO_OBJECTS "/cube.obj";
+	Object cubeMap(pathCube);
+	cubeMap.makeObject(cubeMapShader);
+	//The debugger should show some errors here, they are not critical and the code still run
+	//Try to understand why they happen what you could modify to remove them.
 
 	double prev = 0;
 	int deltaFrame = 0;
@@ -267,7 +264,7 @@ int main(int argc, char* argv[])
 			std::cout << "\r FPS: " << fpsCount;
 			std::cout.flush();
 		}
-	};
+		};
 
 
 	glm::vec3 light_pos = glm::vec3(1.0, 2.0, 1.5);
@@ -275,7 +272,7 @@ int main(int argc, char* argv[])
 	model = glm::translate(model, glm::vec3(0.0, 0.0, -2.0));
 	model = glm::scale(model, glm::vec3(0.5, 0.5, 0.5));
 
-	glm::mat4 inverseModel = glm::transpose( glm::inverse(model));
+	glm::mat4 inverseModel = glm::transpose(glm::inverse(model));
 
 	glm::mat4 view = camera.GetViewMatrix();
 	glm::mat4 perspective = camera.GetProjectionMatrix();
@@ -284,7 +281,7 @@ int main(int argc, char* argv[])
 	float diffuse = 0.5;
 	float specular = 0.8;
 
-	glm::vec3 materialColour = glm::vec3(0.5f,0.6,0.8);
+	glm::vec3 materialColour = glm::vec3(0.5f, 0.6, 0.8);
 
 	//Rendering
 
@@ -299,17 +296,25 @@ int main(int argc, char* argv[])
 	shader.setFloat("light.quadratic", 0.07);
 
 
-	
-	//Create the cubemap texture
-	
 
-	// Set the texture parameters
-	
 
-	//This is the image you will use as your skybox
+	GLuint cubeMapTexture;
+	glGenTextures(1, &cubeMapTexture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+
+	// texture parameters
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//stbi_set_flip_vertically_on_load(true);
+
 	std::string pathToCubeMap = PATH_TO_TEXTURE "/cubemaps/yokohama3/";
 
-	std::map<std::string, GLenum> facesToLoad = { 
+	std::map<std::string, GLenum> facesToLoad = {
 		{pathToCubeMap + "posx.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_X},
 		{pathToCubeMap + "posy.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_Y},
 		{pathToCubeMap + "posz.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_Z},
@@ -317,13 +322,13 @@ int main(int argc, char* argv[])
 		{pathToCubeMap + "negy.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_Y},
 		{pathToCubeMap + "negz.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_Z},
 	};
-	//load the six faces, you need to complete the function
+	//load the six faces
 	for (std::pair<std::string, GLenum> pair : facesToLoad) {
 		loadCubemapFace(pair.first.c_str(), pair.second);
 	}
 
 
-	
+	glfwSwapInterval(1);
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 		view = camera.GetViewMatrix();
@@ -341,24 +346,24 @@ int main(int argc, char* argv[])
 		shader.setMatrix4("P", perspective);
 		shader.setVector3f("u_view_pos", camera.Position);
 
-		
-		auto delta = light_pos + glm::vec3(0.0,0.0,2 * std::sin(now));
+
+		auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
 
 		shader.setVector3f("light.light_pos", delta);
 
-		
+
+		//Show the object even if it's depth is equal to the depht of the object already present
 		glDepthFunc(GL_LEQUAL);
 		sphere1.draw();
 
-		//Use the shader for the cube map
-		
-		//Set the relevant uniform
-		
-		//Activate and bind the texture for the cubemap
-		
-		//Draw the cubemap
-		
-		
+
+		cubeMapShader.use();
+		cubeMapShader.setMatrix4("V", view);
+		cubeMapShader.setMatrix4("P", perspective);
+		cubeMapShader.setInteger("cubemapTexture", 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+		cubeMap.draw();
 		glDepthFunc(GL_LESS);
 
 		fps(now);
@@ -372,23 +377,22 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-void loadCubemapFace(const char * path, const GLenum& targetFace)
+void loadCubemapFace(const char* path, const GLenum& targetFace)
 {
 	int imWidth, imHeight, imNrChannels;
-	//Load the image using stbi_load
-	unsigned char* data = nullptr;
+	unsigned char* data = stbi_load(path, &imWidth, &imHeight, &imNrChannels, 0);
 	if (data)
 	{
-		//Send the image to the the buffer
-		
+
+		glTexImage2D(targetFace, 0, GL_RGB, imWidth, imHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//glGenerateMipmap(targetFace);
 	}
 	else {
 		std::cout << "Failed to Load texture" << std::endl;
 		const char* reason = stbi_failure_reason();
 		std::cout << (reason == NULL ? "Probably not implemented by the student" : reason) << std::endl;
 	}
-	//Don't forget to free the memory
-	
+	stbi_image_free(data);
 }
 
 

@@ -161,18 +161,17 @@ int main(int argc, char* argv[])
 
 		"in vec3 v_frag_coord; \n"
 		"in vec3 v_normal; \n"
+
 		"uniform vec3 u_view_pos; \n"
 		//Declare a uniform to have access to the cubemap texture
+		"uniform samplerCube cubemapSampler; \n"
 		
-
 
 		"void main() { \n"
-		//What do you need to compute the reflection vector R ?
-		
-		//Find the position you need to sample on the cubemap, tips : glsl has a reflect method
-		"//vec3 R = ...; \n"
-		//use tue cubemp texture to color the fragment
-		"FragColor = vec4(1.0,0.5,0.5,1.0); \n"
+		"vec3 N = normalize(v_normal);\n"
+		"vec3 V = normalize(u_view_pos - v_frag_coord); \n"
+		"vec3 R = reflect(-V,N); \n"
+		"FragColor = texture(cubemapSampler, R); \n"
 		"} \n";
 
 	Shader shader(sourceV, sourceF);
@@ -325,7 +324,9 @@ int main(int argc, char* argv[])
 		shader.setVector3f("light.light_pos", delta);
 		
 		//Send the cubemap to the shader for the sphere
-		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+		cubeMapShader.setInteger("cubemapTexture", 0);
 
 		
 		glDepthFunc(GL_LEQUAL);

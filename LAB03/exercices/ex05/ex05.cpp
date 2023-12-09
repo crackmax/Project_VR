@@ -11,7 +11,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-
 #include "../../camera.h"
 #include "../../shader.h"
 #include "../object.h"
@@ -145,14 +144,24 @@ int main(int argc, char* argv[])
 		"uniform mat4 V; \n"
 		"uniform mat4 P; \n"
 		//2. which vector do you need and where do you use them ?
+		"uniform vec3 u_light_pos; \n"
+		"uniform vec3 u_view_pos; \n"
+		"float spec_strength = 0.8;\n"
 
 
 		" void main(){ \n"
 		"vec4 frag_coord = M*vec4(position, 1.0); \n"
 		"gl_Position = P*V*frag_coord; \n"
-		//calculate specular light
-		"v_specular = vec3(1.0f); \n" 
-		"\n" 
+
+		"vec3 N = vec3(itM * vec4(normal, 1.0)); \n"
+		"vec3 L = normalize(u_light_pos - frag_coord.xyz) ; \n"
+		"vec3 V = normalize(u_view_pos - frag_coord.xyz); \n"
+		"vec3 R = reflect (-L,N); //max (2 * dot(N,L) * N - L , 0.0) ; \n "
+		"float cosTheta = dot(R , V); \n"
+		"float spec = pow(max(cosTheta,0.0), 32.0); \n"
+		"float specular = spec_strength * spec;\n"
+		"v_specular = vec3(specular); \n"
+		"\n"
 		"}\n";
 	const std::string sourceF = "#version 330 core\n"
 		"out vec4 FragColor;\n"
@@ -160,14 +169,14 @@ int main(int argc, char* argv[])
 
 		"in vec3 v_specular; \n"
 
-		"void main() { \n"		
+		"void main() { \n"
 		"FragColor = vec4(v_specular, 1.0); \n"
 		"} \n";
 
 
 	Shader shader(sourceV, sourceF);
 
-	
+
 
 	char path[] = PATH_TO_OBJECTS "/bunny_small.obj";
 
@@ -175,7 +184,7 @@ int main(int argc, char* argv[])
 	sphere1.makeObject(shader);
 
 	const glm::vec3 light_pos = glm::vec3(1.0, 2.0, 2.0);
-	
+
 
 	double prev = 0;
 	int deltaFrame = 0;
@@ -189,14 +198,14 @@ int main(int argc, char* argv[])
 			deltaFrame = 0;
 			std::cout << "\r FPS: " << fpsCount;
 		}
-	};
+		};
 
 
 	glm::mat4 model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(0.0, 0.0, -2.0));
 	model = glm::scale(model, glm::vec3(0.5, 0.5, 1.0));
 
-	glm::mat4 inverseModel = glm::transpose( glm::inverse(model));
+	glm::mat4 inverseModel = glm::transpose(glm::inverse(model));
 
 	glm::mat4 view = camera.GetViewMatrix();
 	glm::mat4 perspective = camera.GetProjectionMatrix();
@@ -221,9 +230,12 @@ int main(int argc, char* argv[])
 		shader.setMatrix4("itM", inverseModel);
 		shader.setMatrix4("V", view);
 		shader.setMatrix4("P", perspective);
+		shader.setVector3f("u_view_pos", camera.Position);
+		shader.setVector3f("u_light_pos", light_pos);
 
 
 		sphere1.draw();
+		//glDrawArrays(GL_TRIANGLES, 0, 12);
 
 		fps(now);
 		glfwSwapBuffers(window);
@@ -264,4 +276,5 @@ void processInput(GLFWwindow* window) {
 
 
 }
+
 

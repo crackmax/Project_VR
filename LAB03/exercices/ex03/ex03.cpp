@@ -12,14 +12,13 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-
 #include "../../camera.h"
 #include "../../shader.h"
 #include "../object.h"
 
 
-const int width = 500;
-const int height = 500;
+const int width = 1500;
+const int height = 1500;
 
 
 GLuint compileShader(std::string shaderCode, GLenum shaderType);
@@ -105,7 +104,7 @@ int main(int argc, char* argv[])
 
 
 	//Create the window
-	GLFWwindow* window = glfwCreateWindow(width, height, "Exercise 03", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Solution 03", nullptr, nullptr);
 	if (window == NULL)
 	{
 		glfwTerminate();
@@ -113,7 +112,6 @@ int main(int argc, char* argv[])
 	}
 
 	glfwMakeContextCurrent(window);
-
 
 	//load openGL function
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -143,17 +141,21 @@ int main(int argc, char* argv[])
 		"out vec3 v_diffuse; \n"
 
 		"uniform mat4 M; \n"
+		"uniform mat4 itM; \n"
 		"uniform mat4 V; \n"
 		"uniform mat4 P; \n"
+		"uniform vec3 u_light_pos; \n"
 
-		//Think about which uniform you may need
 		" void main(){ \n"
-		"vec4 frag_coord = M*vec4(position, 1.0); \n"
+		"vec4 frag_coord = M*vec4(position, 1.0);"
 		"gl_Position = P*V*frag_coord;\n"
 		//3. transform correctly the normals
+		"vec3 norm = vec3(itM * vec4(normal, 1.0)); \n"
 		//3. use Gouraud : compute the diffuse light with the normals at the vertices
-		"v_diffuse = vec3(1.0f);\n" //put the result of your calculation here
-		"}\n"; 
+		"vec3 L = normalize(u_light_pos - frag_coord.xyz); \n"
+		"float diffusion = max(0.0, dot(norm, L)); \n"
+		"v_diffuse = vec3(diffusion);\n" //same component in every direction
+		"}\n";
 	const std::string sourceF = "#version 330 core\n"
 		"out vec4 FragColor;"
 		"precision mediump float; \n"
@@ -163,15 +165,35 @@ int main(int argc, char* argv[])
 		"FragColor = vec4(v_diffuse, 1.0); \n"
 		"} \n";
 
-	
+
 	Shader shader(sourceV, sourceF);
 
 	//1. Load the model for 3 types of spheres
-	
+
+	char path1[] = PATH_TO_OBJECTS"/sphere_extremely_coarse.obj";
+	char path2[] = PATH_TO_OBJECTS"/sphere_coarse.obj";
+	char path3[] = PATH_TO_OBJECTS"/sphere_smooth.obj";
+
+	Object sphere1(path1);
+	sphere1.makeObject(shader);
+	sphere1.model = glm::translate(sphere1.model, glm::vec3(2.3, 0.0, 0.0));
+	sphere1.model = glm::scale(sphere1.model, glm::vec3(0.9, 0.9, 0.9));
+
+	Object sphere2(path2);
+	sphere2.makeObject(shader);
+	sphere2.model = glm::translate(sphere2.model, glm::vec3(0.0, 0.0, 0.0));
+	sphere2.model = glm::scale(sphere2.model, glm::vec3(0.9, 0.9, 0.9));
+
+	Object sphere3(path3);
+	sphere3.makeObject(shader);
+	sphere3.model = glm::translate(sphere3.model, glm::vec3(-2.3, 0.0, -0.0));
+	sphere3.model = glm::scale(sphere3.model, glm::vec3(0.9, 0.9, 0.9));
+
+
 
 	//2. Choose a position for the light
-	//const glm::vec3 light_pos = ...
-	
+	const glm::vec3 light_pos = glm::vec3(0, 0, -1);
+
 
 	double prev = 0;
 	int deltaFrame = 0;
@@ -185,11 +207,11 @@ int main(int argc, char* argv[])
 			deltaFrame = 0;
 			std::cout << "\r FPS: " << fpsCount;
 		}
-	};
+		};
 
 
-	
-	
+
+
 
 
 	glm::mat4 view = camera.GetViewMatrix();
@@ -211,11 +233,28 @@ int main(int argc, char* argv[])
 		//2. Use the shader Class to send the relevant uniform
 		shader.use();
 
+		shader.setMatrix4("M", sphere1.model);
 		shader.setMatrix4("V", view);
 		shader.setMatrix4("P", perspective);
-		//what other uniforms do you need to send
+		shader.setVector3f("u_light_pos", light_pos);
+
+		glm::mat4 itM = glm::inverseTranspose(sphere1.model);
+		shader.setMatrix4("itM", itM);
+		sphere1.draw();
+
+		shader.setMatrix4("M", sphere2.model);
+		shader.setMatrix4("itM", glm::inverseTranspose(sphere2.model));
+		sphere2.draw();
 		
-		//don't forget to draw your objects
+		if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS)
+			sphere3.model = glm::scale(sphere3.model, glm::vec3(0.9, 0.9, 0.9));
+		if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS)
+			sphere3.model = glm::scale(sphere3.model, glm::vec3(1.1, 1.1, 1.1));
+		
+		
+		shader.setMatrix4("M", sphere3.model);
+		shader.setMatrix4("itM", glm::inverseTranspose(sphere3.model));
+		sphere3.draw();
 
 		fps(now);
 		glfwSwapBuffers(window);
@@ -230,7 +269,7 @@ int main(int argc, char* argv[])
 
 
 void processInput(GLFWwindow* window) {
-	// Use the cameras class to change the parameters of the camera
+	//3. Use the cameras class to change the parameters of the camera
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
@@ -245,14 +284,15 @@ void processInput(GLFWwindow* window) {
 		camera.ProcessKeyboardMovement(BACKWARD, 0.1);
 
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		camera.ProcessKeyboardRotation(1, 0.0,1);
+		camera.ProcessKeyboardRotation(1, 0.0, 1);
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		camera.ProcessKeyboardRotation(-1, 0.0,1);
+		camera.ProcessKeyboardRotation(-1, 0.0, 1);
 
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 		camera.ProcessKeyboardRotation(0.0, 1.0, 1);
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		camera.ProcessKeyboardRotation(0.0, -1.0, 1);
+	
 
 
 }

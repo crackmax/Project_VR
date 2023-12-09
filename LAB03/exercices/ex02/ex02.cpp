@@ -18,8 +18,8 @@
 #include "../object.h"
 
 
-const int width = 500;
-const int height = 500;
+const int width = 1000;
+const int height = 1000;
 
 
 GLuint compileShader(std::string shaderCode, GLenum shaderType);
@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
 	//Here for this exercise session, we use a macro to indicate the folder containing the .obj files
 	//Check the file CMakeLists.txt in the LAB03 folder to see where it is specified
 	//Start the exercise with the cube object then try to test your implementation with more complex one
-	char path[] = PATH_TO_OBJECTS "/cube.obj";
+	char path[] = PATH_TO_OBJECTS "/bunny_small.obj";
 	
 	//Model is the class present in the object.h file
 	//Change the constructor to read the file

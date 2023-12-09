@@ -17,8 +17,8 @@
 #include "../../shader.h"
 
 
-const int width = 500;
-const int height = 500;
+const int width = 800;
+const int height = 800;
 
 
 GLuint compileShader(std::string shaderCode, GLenum shaderType);
@@ -272,29 +272,31 @@ int main(int argc, char* argv[])
 
 
 void processInput(GLFWwindow* window) {
+	float deltaTime = 0.001;
+	float deltaTime2 = 0.01;
 	//3. Use the cameras class to change the parameters of the camera
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboardMovement(LEFT, 0.1);
+		camera.ProcessKeyboardMovement(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboardMovement(RIGHT, 0.1);
+		camera.ProcessKeyboardMovement(RIGHT, deltaTime);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboardMovement(FORWARD, 0.1);
+		camera.ProcessKeyboardMovement(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboardMovement(BACKWARD, 0.1);
+		camera.ProcessKeyboardMovement(BACKWARD, deltaTime);
 
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		camera.ProcessKeyboardRotation(1, 0.0,1);
+		camera.ProcessKeyboardRotation(1, 0.0, deltaTime2);
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		camera.ProcessKeyboardRotation(-1, 0.0,1);
+		camera.ProcessKeyboardRotation(-1, 0.0, deltaTime2);
 
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		camera.ProcessKeyboardRotation(0.0, 1.0, 1);
+		camera.ProcessKeyboardRotation(0.0, 1.0, deltaTime2);
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		camera.ProcessKeyboardRotation(0.0, -1.0, 1);
+		camera.ProcessKeyboardRotation(0.0, -1.0, deltaTime2);
 
 
 }

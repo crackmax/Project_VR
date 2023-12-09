@@ -8,9 +8,13 @@ out vec4 fragColor;
 
 void main() {
 	vec2 fragCoord = gl_FragCoord.xy;
-	vec2 uv = fragCoord/iResolution.xy;
-	vec3 col = 0.5 + 0.5*cos(iTime + uv.xyx+vec3(0,2,4));
-	fragColor = vec4(col,1.0);
+	vec3 grey = vec3(1.0,1.0,1.0);
+	vec3 green = vec3(0.0, 1.0, 0.0);
+	vec3 red = vec3(1.0, 0.0, 0.0);
+	vec3 pixel;
+	pixel = (fragCoord.x > iResolution.x / 2.0) ? color1 : color2;
+
+	fragColor = vec4(pixel, 1.0);
 }
 
 

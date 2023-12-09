@@ -10,9 +10,10 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 #define some variable
-set(COMPILE_LAB01 ON CACHE BOOL "Compile the first Lab")
-set(COMPILE_LAB02 ON CACHE BOOL "Compile the second Lab")
-set(COMPILE_LAB03 OFF CACHE BOOL "Compile the third Lab")
+set(COMPILE_LAB01 OFF CACHE BOOL "Compile the first Lab")
+set(COMPILE_LAB02 OFF CACHE BOOL "Compile the second Lab")
+set(COMPILE_LAB03 ON CACHE BOOL "Compile the third Lab")
+set(COMPILE_PROJECT ON CACHE BOOL "Compile the Project")
 set(COMPILE_SOLUTIONS OFF CACHE BOOL "Compile the solutions")
 
 
@@ -53,4 +54,7 @@ endif()
 
 if(COMPILE_LAB03)
 	add_subdirectory(LAB03)
+endif()
+if(COMPILE_PROJECT)
+	add_subdirectory(Project)
 endif()
