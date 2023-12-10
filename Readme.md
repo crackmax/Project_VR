@@ -17,7 +17,7 @@ The shaders are in /project/shaders
 Feel free to look at them.
 ### Setup an IDE that support CMake build (recommanded option)
 the following instructions come from the exercise session readme. Since I am using the same make file, the steps are the same. I used visual studio 2022 on windows with the desktop development kid with C++
-Cmake tools for windows. I recommend this approach as it is very simple. When cloned or forked, right click on the CMakeList.txt and click configure infof502-project. This should configure the project with the correct libraries. Then choose Project.exe and execute!
+Cmake tools for windows. I recommend this approach as it is very simple. When cloned or forked, right click on the CMakeList.txt and click configure info502-project. This should configure the project with the correct libraries. Then choose Project.exe and execute!
 
 The project uses the following libraries:
 - STB for images
