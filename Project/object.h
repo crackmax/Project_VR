@@ -264,7 +264,6 @@ public:
 
 		auto att_pos = glGetAttribLocation(shader.ID, "position");
 		if (att_pos != -1) {
-			std::cout << "Attribute Locations: " << std::endl;
 			glEnableVertexAttribArray(att_pos);
 			glVertexAttribPointer(att_pos, 3, GL_FLOAT, false, 14 * sizeof(float), (void*)0);
 		}
