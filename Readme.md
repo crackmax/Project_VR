@@ -7,11 +7,15 @@ The cmake files used are inspired from the exercise sessions hence, from Glitter
 Make sure that git is installed on your computer and clone or fork this repo.
 
 ## Video and report
-You will find my report and a short video of the animation in /project/report. Feel free to look at the video and read my report
+You will find my report and a short video of the animation in /project/report.
+
+Feel free to look at the video and read my report
 
 ## Data and models
 The models are stored in /project/objects.
+
 The textures are in /project/images.
+
 The shaders are in /project/shaders
 
 Feel free to look at them.
