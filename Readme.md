@@ -1,54 +1,33 @@
-# Exercises for the practical session for INFO-H502
+# Planet project for info h-502
 
-The cmake files used from this project are heavily inspired from Glitter https://github.com/Polytonic/Glitter/blob/master/CMakeLists.txt   
-The exercises present in this repository are based on the exercises in javascript from last year (2021-2022) written by the previous assistant
+The cmake files used are inspired from the exercise sessions hence, from Glitter https://github.com/Polytonic/Glitter/blob/master/CMakeLists.txt
 
 ## Getting Started
 
-Make sure that git is installed on your computer. If not download it at https://git-scm.com/downloads or use `sudo apt-get install git` (in terminal for Linux)
+Make sure that git is installed on your computer and clone or fork this repo.
 
-Clone the project (or fork it) in a **terminal** :
-```
-git clone --recursive https://gitlab.com/lisa-vr-course/info-h502_202324.git 
-```
-If you forgot to add `--recusive` flag (or want to update the submodules) use this:
-```
-git submodule update --init --recursive
-```
+## Video and report
+You will find my report and a short video of the animation in /project/report. Feel free to look at the video and read my report
 
-If you didn't follow the above instructions, download the code in the form of a zip from the gitlab, you will to use git to add the submodules yourself.  
-Delete the glfw, stb and glm folders that are empty (not the glad one !)  
-In a terminal (there no escape to the terminal) use cd and ls/dir to place yourself in the folder containing the code:
-```
-git init
+## Data and models
+The models are stored in /project/objects.
+The textures are in /project/images.
+The shaders are in /project/shaders
 
-git submodule add https://github.com/glfw/glfw 3rdParty/glfw
-git submodule add https://github.com/g-truc/glm 3rdParty/glm
-git submodule add https://github.com/nothings/stb 3rdParty/stb
-```
-
-Note for Linux users:  
-If you have a fresh installation of Linux you may also need to install `sudo apt-get install build-essential` as well as drivers for amd, nvidia or Mesa
-
-If you have an error with cmake saying that it does not find opengl, you can install the `mesa-common-dev`
-If you have other errrors speaking about `libxrandr`, `libxinerama`, `libxcursor` and `libxi` you may also need to install them.
-Here is the list of command you may need to do with Linux (with X11)`, just pick the ones you need:
-
-```
-sudo apt-get install mesa-common-dev
-sudo apt-get install libxrandr-dev
-sudo apt-get install libxinerama-dev
-sudo apt-get install libxcursor-dev
-sudo apt-get install libxi-dev
-```
-
-
-## Setup your development environment and build your code
-
-You have plenty of option to setup your development environment and build your code.
-For conveniance, we recommend you an IDE that directly support cmake. 
-Here is some of them:
+Feel free to look at them.
 ### Setup an IDE that support CMake build (recommanded option)
+the following instructions come from the exercise session readme. Since I am using the same make file, the steps are the same. I used visual studio 2022 on windows with the desktop development kid with C++
+Cmake tools for windows. I recommend this approach as it is very simple. When cloned or forked, right click on the CMakeList.txt and click configure infof502-project. This should configure the project with the correct libraries. Then choose Project.exe and execute!
+
+The project uses the following libraries:
+- STB for images
+- glm (maths)
+- glfw (context manager)
+- glad (pointer manager)
+There are also some files such as shader.h that has been inspired by https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader_s.h
+Camera.h has been re-used from the exercise sessions
+Object.h has been partly taken from the exercise sessions but it has been majorly modified to fit the needs of the project.
+
 #### Visual Studio (Windows only)  
 - Install Visual Studio (Community) if not already done : https://visualstudio.microsoft.com/downloads/ 
 - Install the component "Desktop development with C++" during the installation process and be sure that "C++ Cmake tools for windows" is installed.
@@ -63,14 +42,13 @@ Here is some of them:
 - You can check this tutorial : https://code.visualstudio.com/docs/cpp/cmake-linux
 It's fairly similar for MacOs.
 
-
+### Those next one are possibilities, but please read futher to use them as I am not familiar with them.
 #### Qt creator
 
 - Install cmake if not already done: https://cmake.org/download/ or `sudo apt-get install cmake` (Linux)
 - Install Qt creator (open-source): https://www.qt.io/download-open-source 
 - Open Qt Creator and select `Open project`
 - Chose the default configuration and press configure project
-
 
 #### CLion
 
