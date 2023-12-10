@@ -2,7 +2,6 @@
 
 in vec2 f_tex_coord;
 in vec3 v_frag_coord;
-in vec3 v_normal;
 in mat3 TBN;
 
 out vec4 FragColor;
@@ -22,25 +21,23 @@ float specularCalculation(vec3 N, vec3 L, vec3 V, float shininess) {
 }
 
 void main() {
-    // Diffuse lighting calculation
+
     vec3 L = normalize(u_light_pos - v_frag_coord);
     vec3 V = normalize(u_view_pos - v_frag_coord);
+    // normals are [-1,1] and color is [0,1]
     vec3 normalMap = normalize(texture(normalMap, f_tex_coord).rgb * 2.0 - 1.0);
     vec3 N = normalize(TBN * normalMap);
     float diff = max(dot(N, L), 0.0);
     
-    // Specular lighting calculation
-    float shininess = 32.0; // Adjust as needed
+    float shininess = 32.0;
     float specular = specularCalculation(N, L, V, shininess);
     
-    // Light attenuation
+
     float distance = length(u_light_pos - v_frag_coord);
     float attenuation = 1.0 / (0.03 * distance + 0.008 * distance * distance);
     
-    // Final lighting calculation
     float light = 0.06 + attenuation * (diff + specular);
 
-    // Combine texture color with lighting
     vec4 textureColor = texture(textureSampler, f_tex_coord);
     vec3 finalColor = vec3(textureColor.rgb * vec3(light) * u_light_color);
 

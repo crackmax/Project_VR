@@ -17,8 +17,8 @@ void main() {
     // Sample from the cube map
     vec3 cubeMapColor = texture(cubemapSampler, R).rgb;
 
-    // Combine the reflections (you might want to adjust the weights)
-    vec3 finalColor = 0.99 * cubeMapColor;
+
+    vec3 finalColor = 0.9 * cubeMapColor; 
 
     FragColor = vec4(finalColor, 1.0);
 }

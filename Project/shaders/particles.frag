@@ -1,9 +1,9 @@
 #version 330 core
+in vec3 ParticleColor; // input color from vertex shader
 
-in vec3 ParticleColor;
+out vec4 FragColor; // final color output
 
-out vec4 FragColor;
-
-void main() {
+void main()
+{
     FragColor = vec4(ParticleColor, 1.0);
 }

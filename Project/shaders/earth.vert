@@ -7,7 +7,6 @@ layout (location = 4) in vec3 bitangent;
 
 out vec2 f_tex_coord;
 out vec3 v_frag_coord;
-out vec3 v_normal;
 out mat3 TBN;
 
 uniform mat4 M;
@@ -22,11 +21,8 @@ void main() {
     vec3 B = normalize(vec3(M * vec4(bitangent, 0.0)));
     vec3 N = normalize(vec3(M * vec4(normal, 0.0)));
     TBN = mat3(T, B, N);
-    v_normal = normalize(vec3(itM * vec4(normal, 1.0)));
 
-    // Pass texture coordinates to fragment shader
     f_tex_coord = tex_coord;
 
-    // Pass fragment position to fragment shader
     v_frag_coord = frag_coord.xyz;
 }
